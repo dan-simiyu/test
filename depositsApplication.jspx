@@ -616,15 +616,7 @@
                     </af:panelLabelAndMessage> 
                     
                   </af:panelFormLayout>
-                  <h:panelGrid columns="2" id="pg4">
-                    <af:commandButton text="Save" id="cb3"
-                                      binding="#{depositsApplicationBacking.btnSaveUpdateDeposit}"
-                                      action="#{depositsApplicationBacking.actionSaveUpdateDeposit}"
-                                      partialSubmit="true"
-                                      
-                                      />
-                    <af:commandButton text="Cancel" id="cb2"/>
-                  </h:panelGrid>
+                  
                 </af:panelBox>
               </af:dialog>
             </af:popup>
