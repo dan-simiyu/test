@@ -1,0 +1,1000 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.1"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:af="http://xmlns.oracle.com/adf/faces/rich">
+  <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+  <f:view>
+    <af:document id="d1" title="TurnQuest FMS">
+      <af:messages id="m1"/>
+      <h:outputText escape="false"
+                    value='&lt;link rel="icon" type="image/png" href="#{facesContext.externalContext.requestContextPath}/images/favicon.png">'
+                    id="fav"/>
+      <af:pageTemplate viewId="/templates/FMSTemplate.jspx" id="fms">
+        <f:facet name="center">
+          <af:group id="g1">
+            <af:panelBox text="PanelBox1" id="pb1" showHeader="never">
+              <af:panelGroupLayout id="pgl1">
+                <table width="100%">
+                  <tr>
+                    <td align="right">
+                      <h:panelGrid columns="2" id="pg33">
+                        <af:inputText id="it1"
+                                      helpTopicId="FMSdepositsApplication"
+                                      columns="13" readOnly="true"
+                                      shortDesc="Help"/>
+                        <af:statusIndicator id="si1"/>
+                      </h:panelGrid>
+                    </td>
+                  </tr>
+                </table>
+                
+                 <af:breadCrumbs id="br12" shortDesc="Navigation Bar : You are Currently on Deposits Application Page" 
+                                            inlineStyle="font-weight:bold;" rendered="#{Rendering.userNavigationPathDisplay}">
+                  <af:commandNavigationItem text="Investments"
+                                            id="cni1"
+                                             inlineStyle="color:#073271;"
+                                             action="#{navigation.investments}"/>
+                  <af:commandNavigationItem text="Deposits"
+                                            action="#{navigation.investDeposits}"
+                                            id="cni2"
+                                             inlineStyle="color:#073271;"/>
+                  <af:commandNavigationItem text="Deposits Application"
+                                            id="cni3"
+                                            inlineStyle="color:#073271;"/>
+                </af:breadCrumbs>
+                <af:separator id="sffs1" rendered="#{Rendering.userNavigationPathDisplay}"/> 
+                
+                <h:panelGrid columns="2" id="pg1"  rendered="#{!Rendering.userNavigationPathDisplay}">
+                  <af:outputLabel value="Deposits Application" id="ol1"
+                                  inlineStyle="font-weight:bold;"/>
+                </h:panelGrid>
+                <af:separator id="s1"  rendered="#{!Rendering.userNavigationPathDisplay}"/>
+                <h:panelGrid columns="9" id="pg3">
+                  <af:commandButton text="New" id="btnNewDeposit"
+                                    icon="/images/create.gif"
+                                    action="#{depositsApplicationBacking.actionNewDeposit}"/>
+                  <af:commandButton text="Edit" id="btnEditDeposit"
+                                    icon="/images/update.gif"
+                                    action="#{depositsApplicationBacking.actionEditDeposit}"
+                                    partialSubmit="true"/>
+                  <af:commandButton text="Delete" id="btnDeleteDeposit"
+                                    icon="/images/delete.gif"
+                                    action="#{depositsApplicationBacking.actionDeleteDeposit}"/>
+                  <af:commandButton text="Attach Documents" id="cb11"
+                                    partialSubmit="true"
+                                    actionListener="#{depositsApplicationBacking.onAttachDocument}"
+                                    rendered="#{Rendering.transDocumentsUpload}"/>
+                </h:panelGrid>
+                <af:separator id="s3"/>
+                <af:panelCollection id="pc1"
+                                    styleClass="AFAuxiliaryStretchWidth">
+                  <af:table value="#{bindings.Deposit.collectionModel}"
+                            var="row" rows="#{bindings.Deposit.rangeSize}"
+                            emptyText="#{bindings.Deposit.viewable ? 'No data to display.' : 'Access Denied.'}"
+                            fetchSize="#{bindings.Deposit.rangeSize}"
+                            rowBandingInterval="0"
+                            filterModel="#{bindings.DepositQuery.queryDescriptor}"
+                            queryListener="#{bindings.DepositQuery.processQuery}"
+                            filterVisible="false" varStatus="vs"
+                            rowSelection="single" id="tblDeposits"
+                            binding="#{depositsApplicationBacking.tblDeposits}">
+                    <af:column sortProperty="depRef" sortable="false"
+                               headerText="Reference No." id="c21"
+                               filterable="true">
+                      <af:outputText value="#{row.depRef}" id="ot17"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="companyName" filterable="true"
+                               sortable="true" headerText="Company" id="c16"
+                               width="200">
+                      <af:outputText value="#{row.companyName}" id="ot21"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="depAmount" filterable="true"
+                               sortable="true" headerText="Amount" id="c6"
+                               align="right">
+                      <af:outputText value="#{row.depAmount}" id="ot20"
+                                     converter="javax.faces.Number"/>
+                    </af:column>
+                    <af:column sortProperty="curDesc" sortable="false"
+                               headerText="Currency" id="c18" filterable="true">
+                      <af:outputText value="#{row.curDesc}" id="ot16"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="depRate" filterable="true"
+                               sortable="true" headerText="Interest Rate"
+                               id="c2">
+                      <af:outputText value="#{row.depRate}" id="ot4"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="depTenor" filterable="true"
+                               sortable="true" headerText="Tenor" id="c8">
+                      <af:outputText value="#{row.depTenor}" id="ot19"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="depEffectiveDate"
+                               filterable="false" sortable="true"
+                               headerText="Effective Date" id="c9">
+                      <f:facet name="filter">
+                        <af:inputDate value="#{vs.filterCriteria.depEffectiveDate}"
+                                      id="id3"/>
+                      </f:facet>
+                      <af:outputText value="#{row.depEffectiveDate}" id="ot1">
+                        <af:convertDateTime pattern="dd-MMM-yyyy"/>
+                      </af:outputText>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="maturityDate" filterable="false"
+                               sortable="true" headerText="Maturity Date"
+                               id="c19">
+                      <f:facet name="filter">
+                        <af:inputDate value="#{vs.filterCriteria.maturityDate}"
+                                      id="id5"/>
+                      </f:facet>
+                      <af:outputText value="#{row.maturityDate}" id="ot18">
+                        <af:convertDateTime pattern="dd-MMM-yyyy"/>
+                      </af:outputText>
+                    </af:column>
+                    <af:column sortProperty="depLien" headerText="Lien" id="c23"
+                               filterable="true" align="center" width="50">
+                      <af:outputText value="#{row.depLien}" id="ot22"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="depType" filterable="true"
+                               sortable="true" headerText="Deposit Type"
+                               id="c3">
+                      <af:outputText value="#{row.depType}" id="ot11"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="depWithHoldingTax"
+                               filterable="true" sortable="true"
+                               headerText="W\H Tax Applicable ?" id="c12"
+                               width="50" align="center">
+                      <af:outputText value="#{row.depWithHoldingTax}" id="ot6"/>
+                    </af:column>
+                    <af:column sortProperty="depMedLevyApplicable"
+                               sortable="false"
+                               headerText="Medical Levy Applicable" id="c24">
+                      <af:outputText value="#{row.depMedLevyApplicable}"
+                                     id="ot23"/>
+                    </af:column>
+                    <af:column sortProperty="valtName" sortable="false"
+                               headerText="Valuation" id="c13">
+                      <af:outputText value="#{row.valtName}" id="ot7"/>
+                    </af:column>
+                    <af:column sortProperty="fsName" sortable="false"
+                               headerText="Fund Source" id="c14">
+                      <af:outputText value="#{row.fsName}" id="ot9"/>
+                    </af:column>
+                    <af:column sortProperty="rptcDesc" sortable="false"
+                               headerText="Report Classification" id="c15">
+                      <af:outputText value="#{row.rptcDesc}" id="ot10"/>
+                    </af:column>
+                    <af:column sortProperty="investorName" sortable="false"
+                               headerText="Investor" id="c11" filterable="true">
+                      <af:outputText value="#{row.investorName}" id="ot15"/>
+                    </af:column>
+                    <af:column sortProperty="sourceAccountName" sortable="false"
+                               headerText="Source Account" id="c17"
+                               filterable="true">
+                      <af:outputText value="#{row.sourceAccountName}"
+                                     id="ot13"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.Deposit.hints.countryName.name}" sortable="false"
+                               headerText="Country" id="c39">
+                      <af:outputText value="#{row.countryName}" id="ot34"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.Deposit.hints.stateName.name}" sortable="false"
+                               headerText="State" id="c40">
+                      <af:outputText value="#{row.stateName}" id="ot39"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.Deposit.hints.townName.name}" sortable="false"
+                               headerText="Town" id="c41">
+                      <af:outputText value="#{row.townName}" id="ot40"/>
+                    </af:column>
+                  </af:table>
+                </af:panelCollection>
+              </af:panelGroupLayout>
+            </af:panelBox>
+            <af:popup id="dmsDocPreview"
+                      contentDelivery="lazyUncached">
+              <af:dialog id="d372" styleClass="AFStretchWidth"
+                         title=" " type="none">
+                <af:inlineFrame id="pt_if11"
+                                source="#{sessionScope['toPrint']}"
+                                inlineStyle="width:80vw; height:90vh;"
+                                shortDesc=" "
+                                binding="#{DMSManip.viewIframe}"/>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="dmsPop" contentDelivery="lazyUncached">
+              <af:dialog id="d50" title="Requisition Documents"
+                         type="none">
+                <h:panelGrid id="pg118" columns="5">
+                  <af:inputFile label=" " id="dmsFileSel"
+                                binding="#{DMSManip.txtDmsFile}" maximumFiles="-1"/>
+                  <af:inputText label="Description" id="it64"
+                                binding="#{DMSManip.txtDmsFileDesc}"
+                                showRequired="true"/>
+                  <af:commandButton text="Upload" id="dmsBtnUpload"
+                                partialSubmit="true"
+                                actionListener="#{DMSManip.onUploadFile}"/>
+                </h:panelGrid>
+                <af:spacer width="10" height="10" id="s18"/>
+                <af:separator id="s19"/>
+                <h:panelGrid columns="3" id="pg119">
+                  <af:commandButton text="Delete" id="dmsBtnDel"
+                                    partialSubmit="true"
+                                    actionListener="#{DMSManip.onDmsDocumentDelete}"/>
+                </h:panelGrid>
+                <af:panelCollection id="pc31"
+                                    styleClass="AFStretchWidth">
+                  <f:facet name="menus"/>
+                  <f:facet name="toolbar"/>
+                  <f:facet name="statusbar"/>
+                  <af:table value="#{bindings.FMSDMSDocument.collectionModel}"
+                            var="row"
+                            rows="#{bindings.FMSDMSDocument.rangeSize}"
+                            emptyText="#{bindings.FMSDMSDocument.viewable ? 'No data to display.' : 'Access Denied.'}"
+                            fetchSize="#{bindings.FMSDMSDocument.rangeSize}"
+                            rowBandingInterval="0"
+                            filterModel="#{bindings.FMSDMSDocumentQuery.queryDescriptor}"
+                            queryListener="#{bindings.FMSDMSDocumentQuery.processQuery}"
+                            filterVisible="true" varStatus="vs"
+                            selectedRowKeys="#{bindings.FMSDMSDocument.collectionModel.selectedRow}"
+                            selectionListener="#{bindings.FMSDMSDocument.collectionModel.makeCurrent}"
+                            rowSelection="single" id="t10"
+                            binding="#{DMSManip.tblDmsDocs}">
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.select.name}"
+                               filterable="true" sortable="true"
+                               headerText="Select"
+                               id="c34" width="50">
+                      <af:selectBooleanCheckbox value="#{row.select}"
+                                                label=" " id="sbc1"/>
+                    </af:column>
+                    <af:column id="c275c" headerText="Action" width="60">
+                    <af:commandLink text="[Download]" id="cl13v"
+                                    actionListener="#{DMSManip.onDownloadDocument}"
+                                    rendered="#{!row.isViewable}"/>
+                    <af:commandLink text="[View]" id="cl18t"
+                                    actionListener="#{DMSManip.onViewDocument}"
+                                    rendered="#{row.isViewable}"
+                                    partialSubmit="true"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.fddCode.name}"
+                               filterable="true" sortable="true"
+                               headerText="#{bindings.FMSDMSDocument.hints.fddCode.label}"
+                               id="c33" rendered="false">
+                      <af:outputText value="#{row.fddCode}" id="ot37"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.refNo.name}"
+                               filterable="true" sortable="true"
+                               headerText="#{bindings.FMSDMSDocument.hints.refNo.label}"
+                               id="c37" rendered="false">
+                      <af:outputText value="#{row.refNo}" id="ot35"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.transType.name}"
+                               filterable="true" sortable="true"
+                               headerText="#{bindings.FMSDMSDocument.hints.transType.label}"
+                               id="c32" rendered="false">
+                      <af:outputText value="#{row.transType}" id="ot38"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.docId.name}"
+                               filterable="true" sortable="true"
+                               headerText="#{bindings.FMSDMSDocument.hints.docId.label}"
+                               id="c35" rendered="false">
+                      <af:outputText value="#{row.docId}" id="ot30"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.filename.name}"
+                               filterable="true" sortable="true"
+                               headerText="Original File Name" id="c36"
+                               width="170">
+                      <af:outputText value="#{row.filename}" id="ot32"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.caption.name}"
+                               filterable="true" sortable="true"
+                               headerText="Description" id="c31"
+                               width="250">
+                      <af:outputText value="#{row.caption}" id="ot33"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.userCode.name}"
+                               filterable="true" sortable="true"
+                               headerText="#{bindings.FMSDMSDocument.hints.userCode.label}"
+                               id="c30" rendered="false">
+                      <af:outputText value="#{row.userCode}" id="ot36"/>
+                    </af:column>
+                    <af:column sortProperty="#{bindings.FMSDMSDocument.hints.isViewable.name}"
+                               filterable="true" sortable="true"
+                               headerText="#{bindings.FMSDMSDocument.hints.isViewable.label}"
+                               id="c38" rendered="false">
+                      <af:outputText value="#{row.isViewable}" id="ot28"/>
+                    </af:column>
+                  </af:table>
+                </af:panelCollection>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="depositPop">
+              <af:dialog id="d2" title="Deposit Application Details" type="none"
+                         inlineStyle="width:400.0px;">
+                <af:panelBox text="PanelBox2" id="pb2" showHeader="never">
+                  <af:panelFormLayout id="pfl1">
+                    <af:inputText label="Code : " id="it2" visible="false"
+                                  binding="#{depositsApplicationBacking.depCode}"
+                                  showRequired="true"/>
+                    <af:inputText label="Company Id : " id="it3" visible="false"
+                                  binding="#{depositsApplicationBacking.depCpnId}"
+                                  autoSubmit="true"
+                                  immediate="true"/>
+                    <af:selectOneChoice value="#{bindings.currCode.inputValue}"
+                                        label="#{bindings.currCode.label}"
+                                        required="#{bindings.currCode.hints.mandatory}"
+                                        shortDesc="#{bindings.currCode.hints.tooltip}"
+                                        id="soc12" unselectedLabel="Currency"
+                                        simple="true" autoSubmit="true"
+                                        binding="#{depositsApplicationBacking.socCurrency}"
+                                        valueChangeListener="#{depositsApplicationBacking.changeCurrency}">
+                      <f:selectItems value="#{bindings.currCode.items}"
+                                     id="si19"/>
+                    </af:selectOneChoice>
+                    <af:inputNumberSpinbox label="Currency Rate : " id="ins8"
+                                           visible="false"
+                                           converter="javax.faces.Number"
+                                           showRequired="true"
+                                           autoSubmit="true"
+                                           binding="#{depositsApplicationBacking.depcurrate}"/>
+                    <af:selectOneChoice label="Deposit Type : " value="BA"
+                                        id="soc1"
+                                        binding="#{depositsApplicationBacking.depType}"
+                                        autoSubmit="true"
+                                        valueChangeListener="#{depositsApplicationBacking.isDepositType}">
+                      <!--<af:selectItem label="#{depositsApplicationBacking.fixedOrBackend}" value="BA" id="si3"
+                              binding="#{depositsApplicationBacking.itemLabel}"/>-->
+                      <af:selectItem label="Fixed Deposit - Backend" value="BA"
+                                     id="si3" shortDesc="Previously Backend"/>
+                      <af:selectItem label="Fixed Deposit - Special Deposit"
+                                     value="SD" id="si4"
+                                     shortDesc="Previously Special Deposit"/>
+                      <af:selectItem label="Fixed Deposit - Upfront" value="UP"
+                                     id="si2" shortDesc="Previously Upfront"/>
+                      <af:selectItem label="Call Deposit" value="CALL" id="si8"
+                                     shortDesc="Previously Call Deposit"/>
+                    </af:selectOneChoice>
+                    <af:selectOneChoice label="Interest Type : " value="S"
+                                        id="soc4" autoSubmit="true"
+                                        binding="#{depositsApplicationBacking.depInterestType}">
+                      <af:selectItem label="Simple" value="S" id="si12"/>
+                      <af:selectItem label="Compound" value="C" id="si11"/>
+                    </af:selectOneChoice>
+                    <af:selectOneChoice label="Payment Method: " value="PM"
+                                        id="soc125" autoSubmit="true"
+                                        binding="#{depositsApplicationBacking.paymentEftChq}"
+                                        valueChangeListener="#{depositsApplicationBacking.paymentSelectionListener}">
+                      <af:selectItem label="Cheque" value="CHQ" id="si13"/>
+                      <af:selectItem label="EFT" value="EFT" id="si14"/>
+                      <af:selectItem label="PESALINK" value="PESALINK" id="si149"/>
+                    </af:selectOneChoice>
+                    <af:panelLabelAndMessage label="Email : "
+                                                   showRequired="true"
+                                                   id="plam20"
+                                                   visible="false"
+                                             binding="#{depositsApplicationBacking.lblEmail}">
+                        
+                           <af:inputText label="Email : " id="it68" simple="true" 
+                                          autoSubmit="true"
+                                          visible= "false"
+                                         validator="#{depositsApplicationBacking.emailValidator}"
+                                         binding="#{depositsApplicationBacking.txtSlEmail}"/>
+                                         </af:panelLabelAndMessage>
+                    <af:panelLabelAndMessage label="Reference No. " id="plam4">
+                      <af:inputText label="Short Description : " id="it14"
+                                    binding="#{depositsApplicationBacking.txtRefNo}"
+                                    simple="true"
+                                    disabled="#{Rendering.autoGenerateDepositRef}"
+                                    autoSubmit="true"
+                                    showRequired="!#{Rendering.autoGenerateDepositRef}"/>
+                    </af:panelLabelAndMessage>
+                    <af:panelLabelAndMessage label="Company : " id="plam1"
+                                             showRequired="true">
+                      <af:inputText label="Company : " id="it4" disabled="true"
+                                    simple="true"
+                                    binding="#{depositsApplicationBacking.depCpnName}"/>
+                      <af:commandButton id="cb1" partialSubmit="true"
+                                        icon="/images/dropdown.gif"
+                                        action="#{depositsApplicationBacking.actionShowCompanies}"
+                                        immediate="true"/>
+                    </af:panelLabelAndMessage>
+                    <af:selectOneChoice label="Different Currency Bank? : "
+                                        value="N" id="soc2" autoSubmit="true"
+                                        binding="#{depositsApplicationBacking.txtDiffCurrency}"
+                                        valueChangeListener="#{depositsApplicationBacking.isDifferentCurr}">
+                      <af:selectItem label="YES" value="Y" id="si5"/>
+                      <af:selectItem label="NO" value="N" id="si6"/>
+                    </af:selectOneChoice>
+                    <af:panelLabelAndMessage label="Source Account :" id="plam3"
+                                             showRequired="true">
+                      <af:inputText label="Source Account : " id="it13"
+                                    binding="#{depositsApplicationBacking.txtSourceAccount}"
+                                    simple="true" disabled="true"/>
+                      <af:commandButton id="cb7" icon="/images/dropdown.gif"
+                                        partialSubmit="true"
+                                        action="#{depositsApplicationBacking.actionShowBanks}"
+                                        immediate="true"></af:commandButton>
+                    </af:panelLabelAndMessage>
+                    <af:inputNumberSpinbox label="Bank Currency Rate : "
+                                           id="ins11" visible="false"
+                                           converter="javax.faces.Number"
+                                           showRequired="true"
+                                           binding="#{depositsApplicationBacking.depBankRate}"/>
+                    <af:inputNumberSpinbox label="Amount : " id="ins4"
+                                           binding="#{depositsApplicationBacking.depAmount}"
+                                           autoSubmit="true"
+                                           converter="javax.faces.Number"/> 
+                    <af:inputNumberSpinbox label="Rate : " id="ins1"
+                                           binding="#{depositsApplicationBacking.depRate}"
+                                           autoSubmit="true"
+                                           showRequired="true"/>
+                    <af:inputNumberSpinbox label="Tenor(Days) : " id="ins2"
+                                           binding="#{depositsApplicationBacking.depTenor}"
+                                           autoSubmit="true"
+                                           showRequired="true"/>
+                    <af:inputDate label="Effective Date : " id="id1"
+                                  binding="#{depositsApplicationBacking.depEffectiveDate}"
+                                  autoSubmit="true"
+                                  showRequired="true"/>
+                    <af:inputDate label="Maturity Date : " id="id2"
+                                  binding="#{depositsApplicationBacking.depMaturityDate}"
+                                  visible="false" autoSubmit="true"/>
+                    <af:selectOneChoice label="W/Hold Tax Applicable? : "
+                                        value="N" id="soc5"
+                                        binding="#{depositsApplicationBacking.withHoldTaxApplicable}"
+                                        valueChangeListener="#{depositsApplicationBacking.isWhtApplicable}"
+                                        autoSubmit="true"
+                                        visible="#{Rendering.appWithHoldingTaxAtMaturity}">
+                      <af:selectItem label="YES" value="Y" id="si16"/>
+                      <af:selectItem label="NO" value="N" id="si17"/>
+                    </af:selectOneChoice>
+                    <af:inputNumberSpinbox label="Whtax Rate(%) : "
+                                           visible="false" id="ins43"
+                                           autoSubmit="true" maximum="100"
+                                           binding="#{depositsApplicationBacking.whTaxRate}"
+                                            />
+                    <!--<af:panelLabelAndMessage label="Year Type : "
+                                                   id="plam10"
+                                                   showRequired="true">
+                            <af:inputText label="Year Type :" id="it55"
+                                          simple="true" disabled="true"
+                                          binding="#{depositsApplicationBacking.txtDaysInterest}"/>
+                           <af:commandButton id="cb50"
+                                              icon="/images/dropdown.gif"
+                                              partialSubmit="true">
+                         <af:showPopupBehavior popupId="interestPeriod"/>
+                       </af:commandButton>
+                    </af:panelLabelAndMessage>-->
+                    <af:selectOneChoice label="Year Type : " value="D"
+                                        id="soc99"
+                                        binding="#{depositsApplicationBacking.invYearType}"
+                                        autoSubmit="true">
+                      <af:selectItem label="Default" value="D" id="si119"/>
+                      <af:selectItem label="365" value="NL" id="si129"/>
+                      <af:selectItem label="366" value="L" id="si120"/>
+                      <af:selectItem label="364" value="F" id="si18"/>
+                    </af:selectOneChoice>
+                    <af:selectOneChoice label="Lien : " id="soc7" value="N"
+                                        showRequired="true"
+                                        binding="#{depositsApplicationBacking.txtDapLien}"
+                                        valueChangeListener="#{depositsApplicationBacking.lienChanged}"
+                                        autoSubmit="true">
+                      <af:selectItem value="N" id="si7" label="NO"/>
+                      <af:selectItem value="Y" id="si15" label="YES"/>
+                    </af:selectOneChoice>
+                    <af:inputText label="Lien Desc : " visible="false"
+                                  binding="#{depositsApplicationBacking.txtDapLienDesc}"
+                                  id="it15"/>
+                    <af:selectOneChoice label="Interest Computation:" id="soc6"
+                                        value="N" showRequired="true"
+                                        autoSubmit="true"
+                                        binding="#{depositsApplicationBacking.txtIncMaturity}">
+                      <af:selectItem value="N" id="si20" label="Maturity Date"/>
+                      <af:selectItem value="Y" id="si21" label="Placement Date"/>
+                      <af:selectItem value="S" id="si24" label="Both Maturity and Placement"/>
+                    </af:selectOneChoice>
+                    <af:selectOneChoice label="Medical Levy Applicable? : "
+                                        value="N" id="soc3"
+                                        valueChangeListener="#{depositsApplicationBacking.isDepMedicalLevyApplicable}"
+                                        autoSubmit="true"
+                                        rendered="#{Rendering.medicalLevyVisible}"
+                                        binding="#{depositsApplicationBacking.depMedLevyApplicableChoise}">
+                      <af:selectItem label="YES" value="Y" id="si9"/>
+                      <af:selectItem label="NO" value="N" id="si10"/>
+                    </af:selectOneChoice>
+                    <af:inputNumberSpinbox label="Medical Levy Rate : "
+                                           id="ins10" visible="false"
+                                           showRequired="true"
+                                           binding="#{depositsApplicationBacking.depMedLevyRate}"/>
+                    <af:inputText label="Authorised By : " id="it5"
+                                  binding="#{depositsApplicationBacking.depAutBy}"
+                                  visible="false"/>
+                    <af:inputText label="Authorised : " id="it6"
+                                  binding="#{depositsApplicationBacking.depAuth}"
+                                  visible="false"/>
+                    <af:inputDate label="Authorised Date : " id="id4"
+                                  binding="#{depositsApplicationBacking.depAuthDate}"
+                                  visible="false"/>
+                    <af:inputNumberSpinbox label="Discount : " id="ins7"
+                                           disabled="true" visible="false"
+                                           binding="#{depositsApplicationBacking.depDiscount}"
+                                           converter="javax.faces.Number"/>
+                    <af:inputNumberSpinbox label="Interest : " id="ins3"
+                                           binding="#{depositsApplicationBacking.depInterest}"
+                                           disabled="true"
+                                           converter="javax.faces.Number"/>
+                    <af:inputNumberSpinbox label="WithHolding Tax : " id="ins6"
+                                           disabled="true" visible="false"
+                                           binding="#{depositsApplicationBacking.depWhtax}"/>
+                    <af:inputNumberSpinbox label="Medical Levy : " id="ins9"
+                                           disabled="true" visible="false"
+                                           binding="#{depositsApplicationBacking.depMedLevyAmount}"/>
+                    <af:inputText label="bank Account No. : " id="it7"
+                                  binding="#{depositsApplicationBacking.depBnkAccCrt}"
+                                  visible="false"/>
+                    <af:inputText label="Branch Code : " id="it8"
+                                  binding="#{depositsApplicationBacking.depBranchCode}"
+                                  visible="false"/>
+                    <af:inputText label="VGL Code : " id="it9"
+                                  binding="#{depositsApplicationBacking.depVglCode}"
+                                  visible="false"/>
+                    <af:inputDate label="Withdrwan Date : " id="id6"
+                                  binding="#{depositsApplicationBacking.depWithdrawnDate}"
+                                  visible="false"/>
+                    <af:inputText label="Withdrwan Auth By : " id="it10"
+                                  binding="#{depositsApplicationBacking.depWithDrawAuthBy}"
+                                  visible="false"/>
+                    <af:inputText label="Withdrawn : " id="it11"
+                                  binding="#{depositsApplicationBacking.depWithDrawn}"
+                                  visible="false"/>
+                    <af:inputNumberSpinbox label="Penalty : " id="ins5"
+                                           binding="#{depositsApplicationBacking.depPenalty}"
+                                           visible="false"/>
+                    <af:inputDate label="Maturity Date : " id="id7"
+                                  binding="#{depositsApplicationBacking.maturityDate}"
+                                  disabled="true"/>
+                    <af:panelLabelAndMessage label="Fund Source:"
+                                             id="panelLabelAndMessage4"
+                                             showRequired="false">
+                      <af:inputText label="Short Description : " id="inputText2"
+                                    binding="#{depositsApplicationBacking.txtFundSource}"
+                                    simple="true" disabled="true"/>
+                      <af:commandButton id="commandButton3"
+                                        icon="/images/dropdown.gif"
+                                        partialSubmit="true">
+                        <af:showPopupBehavior popupId="fundSources"/>
+                      </af:commandButton>
+                    </af:panelLabelAndMessage>
+                    <af:panelLabelAndMessage label="Investor :" id="plam2"
+                                             showRequired="false">
+                      <af:inputText label="Investor : " id="it12"
+                                    binding="#{depositsApplicationBacking.txtInvestor}"
+                                    simple="true" disabled="true"/>
+                      <af:commandButton id="cb4" icon="/images/dropdown.gif"
+                                        partialSubmit="true">
+                        <af:showPopupBehavior popupId="investorPop"/>
+                      </af:commandButton>
+                    </af:panelLabelAndMessage>
+                    <af:panelLabelAndMessage label="Valuation Type:"
+                                             id="panelLabelAndMessage3">
+                      <af:inputText label="Valuation Types : " id="inputText3"
+                                    binding="#{depositsApplicationBacking.txtValuationType}"
+                                    simple="true" disabled="true"/>
+                      <af:commandButton id="commandButton7"
+                                        icon="/images/dropdown.gif"
+                                        partialSubmit="true">
+                        <af:showPopupBehavior popupId="valuationTypeDeposit"/>
+                      </af:commandButton>
+                    </af:panelLabelAndMessage>
+                    <af:panelLabelAndMessage label="Report Classification:"
+                                             id="panelLabelAndMessage5">
+                      <af:inputText label="Short Description : " id="inputText1"
+                                    binding="#{depositsApplicationBacking.txtRptClass}"
+                                    simple="true" disabled="true"/>
+                      <af:commandButton id="commandButton6"
+                                        icon="/images/dropdown.gif"
+                                        partialSubmit="true">
+                        <af:showPopupBehavior popupId="rptClassification"/>
+                      </af:commandButton>
+                    </af:panelLabelAndMessage>
+                       <af:panelLabelAndMessage label="Custodian :"
+                                             id="plam5">
+                      <af:inputText label="Short Description : " id="it16"
+                                    simple="true" disabled="true"
+                                    binding="#{depositsApplicationBacking.txtCustodian}"/>
+                      <af:commandButton id="cb10"
+                                        icon="/images/dropdown.gif"
+                                        partialSubmit="true">
+                        <af:showPopupBehavior popupId="custodian"/>
+                      </af:commandButton>
+                    </af:panelLabelAndMessage> 
+                    
+                  </af:panelFormLayout>
+                  <h:panelGrid columns="2" id="pg4">
+                    <af:commandButton text="Save" id="cb3"
+                                      binding="#{depositsApplicationBacking.btnSaveUpdateDeposit}"
+                                      action="#{depositsApplicationBacking.actionSaveUpdateDeposit}"
+                                      partialSubmit="true"
+                                      
+                                      />
+                    <af:commandButton text="Cancel" id="cb2"/>
+                  </h:panelGrid>
+                </af:panelBox>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="companiesPop">
+              <af:dialog id="d8" title="Companies List" type="none"
+                         inlineStyle="width:400.0px;">
+                <af:panelBox text="PanelBox8" id="pb4" showHeader="never">
+                  <af:table value="#{bindings.ShareCompany.collectionModel}"
+                            var="row" rows="#{bindings.ShareCompany.rangeSize}"
+                            emptyText="#{bindings.ShareCompany.viewable ? 'No data to display.' : 'Access Denied.'}"
+                            fetchSize="#{bindings.ShareCompany.rangeSize}"
+                            rowBandingInterval="0"
+                            filterModel="#{bindings.ShareCompanyQuery.queryDescriptor}"
+                            queryListener="#{bindings.ShareCompanyQuery.processQuery}"
+                            filterVisible="true" varStatus="vs"
+                            rowSelection="single" id="t6"
+                            binding="#{depositsApplicationBacking.tblCompaniesLov}">
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="cpnId" filterable="true"
+                               sortable="true" headerText="Id" id="c4"
+                               visible="false">
+                      <af:outputText value="#{row.cpnId}" id="ot2"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="cpnCode" filterable="true"
+                               sortable="true" headerText="Code" id="c1">
+                      <af:outputText value="#{row.cpnCode}" id="ot5"/>
+                    </af:column>
+                    <af:column filterFeatures="caseInsensitive"
+                               sortProperty="cpnName" filterable="true"
+                               sortable="true" headerText="Name" id="c5"
+                               width="150">
+                      <af:outputText value="#{row.cpnName}" id="ot3"/>
+                    </af:column>
+                  </af:table>
+                  <h:panelGrid columns="2" id="pg14">
+                    <af:commandButton text="Ok" id="btnAcceptCompany"
+                                      action="#{depositsApplicationBacking.actionAcceptCompanyDeposits}"
+                                      partialSubmit="true"/>
+                    <af:commandButton text="Cancel" id="btnCancelCompany"
+                                      partialSubmit="true"/>
+                  </h:panelGrid>
+                </af:panelBox>
+              </af:dialog>
+            </af:popup>
+            
+              <af:popup id="custodian">
+              <af:dialog id="id552" title="Custodians/PFC" type="none"
+                         inlineStyle="width:400.0px;">
+                <af:panelBox text="PanelBox4" id="panelBox7772" showHeader="never">
+                  <af:panelCollection id="panely2"
+                                      styleClass="AFAuxiliaryStretchWidth">
+                    <af:table value="#{bindings.ReportClass1.collectionModel}"
+                              var="row"
+                              rows="#{bindings.ReportClass1.rangeSize}"
+                              emptyText="#{bindings.ReportClass1.viewable ? 'No data to display.' : 'Access Denied.'}"
+                              fetchSize="#{bindings.ReportClass1.rangeSize}"
+                              rowBandingInterval="0"
+                              filterModel="#{bindings.ReportClass1Query.queryDescriptor}"
+                              queryListener="#{bindings.ReportClass1Query.processQuery}"
+                              filterVisible="true" varStatus="vs"
+                              selectionListener="#{bindings.ReportClass1.collectionModel.makeCurrent}"
+                              rowSelection="single" id="t9"
+                              binding="#{depositsApplicationBacking.depositCustodian}">
+                      <af:column sortProperty="#{bindings.ReportClass1.hints.regName.name}"
+                                 filterable="true" sortable="true"
+                                 headerText="PFC"
+                                 id="c29">
+                        <af:outputText value="#{row.regName}" id="ot31"/>
+                      </af:column>
+                    
+                    </af:table>
+                  </af:panelCollection>
+                  <h:panelGrid columns="2" id="panelGrid27">
+                    <af:commandButton text="Ok" id="commandButton1077"
+                                      partialSubmit="true"
+                                      action="#{depositsApplicationBacking.actionAcceptCustodian}"/>
+                    <af:commandButton text="Cancel" id="commandButton1177"/>
+                  </h:panelGrid>
+                </af:panelBox>
+              </af:dialog>
+            </af:popup>
+            
+            <af:popup id="rptClassification">
+              <af:dialog id="dialog2" title="Report Classifications" type="none"
+                         inlineStyle="width:400.0px;">
+                <af:panelBox text="PanelBox4" id="panelBox2" showHeader="never">
+                  <af:panelCollection id="panelCollection2"
+                                      styleClass="AFAuxiliaryStretchWidth">
+                    <af:table value="#{bindings.ReportClass.collectionModel}"
+                              var="row" rows="#{bindings.ReportClass.rangeSize}"
+                              emptyText="#{bindings.ReportClass.viewable ? 'No data to display.' : 'Access Denied.'}"
+                              fetchSize="#{bindings.ReportClass.rangeSize}"
+                              rowBandingInterval="0"
+                              filterModel="#{bindings.ReportClassQuery.queryDescriptor}"
+                              queryListener="#{bindings.ReportClassQuery.processQuery}"
+                              filterVisible="true" varStatus="vs"
+                              rowSelection="single" id="t4"
+                              binding="#{depositsApplicationBacking.tblRptClass}">
+                      <af:column sortProperty="rptcType" filterable="true"
+                                 sortable="true" headerText="Type" id="column9">
+                        <af:outputText value="#{row.rptcType}"
+                                       id="outputText9"/>
+                      </af:column>
+                      <af:column sortProperty="rptcDesc" filterable="true"
+                                 sortable="true" headerText="Description"
+                                 id="column8">
+                        <af:outputText value="#{row.rptcDesc}"
+                                       id="outputText8"/>
+                      </af:column>
+                    </af:table>
+                  </af:panelCollection>
+                  <h:panelGrid columns="2" id="panelGrid2">
+                    <af:commandButton text="Ok" id="commandButton10"
+                                      partialSubmit="true"
+                                      action="#{depositsApplicationBacking.actionAcceptRptClass}"/>
+                    <af:commandButton text="Cancel" id="commandButton11"/>
+                  </h:panelGrid>
+                </af:panelBox>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="fundSources">
+              <af:dialog id="dialog1" title="Fund Sources" type="none"
+                         inlineStyle="width:400.0px;">
+                <af:panelBox text="PanelBox4" id="panelBox1" showHeader="never">
+                  <af:panelCollection id="panelCollection1"
+                                      styleClass="AFAuxiliaryStretchWidth">
+                    <af:table value="#{bindings.FundSource.collectionModel}"
+                              var="row" rows="#{bindings.FundSource.rangeSize}"
+                              emptyText="#{bindings.FundSource.viewable ? 'No data to display.' : 'Access Denied.'}"
+                              fetchSize="#{bindings.FundSource.rangeSize}"
+                              rowBandingInterval="0"
+                              filterModel="#{bindings.FundSourceQuery.queryDescriptor}"
+                              queryListener="#{bindings.FundSourceQuery.processQuery}"
+                              filterVisible="true" varStatus="vs"
+                              rowSelection="single" id="t2"
+                              binding="#{depositsApplicationBacking.tblFundSources}">
+                      <af:column sortProperty="fsName" filterable="true"
+                                 sortable="true" headerText="Name" id="column4">
+                        <af:outputText value="#{row.fsName}" id="outputText4"/>
+                      </af:column>
+                    </af:table>
+                  </af:panelCollection>
+                  <h:panelGrid columns="2" id="panelGrid1">
+                    <af:commandButton text="Ok" id="commandButton4"
+                                      partialSubmit="true"
+                                      action="#{depositsApplicationBacking.actionAcceptFundSource}"/>
+                    <af:commandButton text="Cancel" id="commandButton5"/>
+                  </h:panelGrid>
+                </af:panelBox>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="valuationTypes">
+              <af:dialog id="dialog3" title="Valuation Types" type="none"
+                         inlineStyle="width:400.0px;">
+                <af:panelBox text="PanelBox4" id="panelBox3" showHeader="never">
+                  <af:panelCollection id="panelCollection3"
+                                      styleClass="AFAuxiliaryStretchWidth">
+                    <af:table value="#{bindings.ValuationType.collectionModel}"
+                              var="row"
+                              rows="#{bindings.ValuationType.rangeSize}"
+                              emptyText="#{bindings.ValuationType.viewable ? 'No data to display.' : 'Access Denied.'}"
+                              fetchSize="#{bindings.ValuationType.rangeSize}"
+                              rowBandingInterval="0"
+                              filterModel="#{bindings.ValuationTypeQuery.queryDescriptor}"
+                              queryListener="#{bindings.ValuationTypeQuery.processQuery}"
+                              filterVisible="true" varStatus="vs"
+                              rowSelection="single" id="t1"
+                              binding="#{depositsApplicationBacking.tblValuationTypes}">
+                      <af:column sortProperty="valtId" filterable="true"
+                                 sortable="false"
+                                 headerText="#{bindings.ValuationType.hints.valtId.label}"
+                                 id="column6">
+                        <af:outputText value="#{row.valtId}" id="outputText6"/>
+                      </af:column>
+                      <af:column sortProperty="valtName" filterable="true"
+                                 sortable="false" headerText="Name"
+                                 id="column5">
+                        <af:outputText value="#{row.valtName}"
+                                       id="outputText5"/>
+                      </af:column>
+                    </af:table>
+                  </af:panelCollection>
+                  <h:panelGrid columns="2" id="panelGrid3">
+                    <af:commandButton text="Ok" id="commandButton8"
+                                      partialSubmit="true"
+                                      action="#{depositsApplicationBacking.actionAcceptValuationTypes}"/>
+                    <af:commandButton text="Cancel" id="commandButton9"/>
+                  </h:panelGrid>
+                </af:panelBox>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="valuationTypeDeposit">
+              <af:dialog id="d5" title="Valuation Types" type="none"
+                         inlineStyle="width:250.0px;">
+                <af:panelBox text="PanelBox9" id="pb6" showHeader="never">
+                  <af:panelCollection id="pc4"
+                                      styleClass="AFAuxiliaryStretchWidth">
+                    <af:table value="#{bindings.ValuationType1.collectionModel}"
+                              var="row"
+                              rows="#{bindings.ValuationType1.rangeSize}"
+                              emptyText="#{bindings.ValuationType1.viewable ? 'No data to display.' : 'Access Denied.'}"
+                              fetchSize="#{bindings.ValuationType1.rangeSize}"
+                              rowBandingInterval="0"
+                              filterModel="#{bindings.ValuationType1Query.queryDescriptor}"
+                              queryListener="#{bindings.ValuationType1Query.processQuery}"
+                              filterVisible="true" varStatus="vs"
+                              rowSelection="single" id="t7"
+                              binding="#{depositsApplicationBacking.tblValuationTypeDeposits}">
+                      <af:column sortProperty="#{bindings.ValuationType1.hints.valtId.name}"
+                                 filterable="true" sortable="true"
+                                 rendered="false"
+                                 headerText="#{bindings.ValuationType1.hints.valtId.label}"
+                                 id="c25">
+                        <af:outputText value="#{row.valtId}" id="ot25"/>
+                      </af:column>
+                      <af:column sortProperty="#{bindings.ValuationType1.hints.valtName.name}"
+                                 filterable="true" sortable="true" width="200"
+                                 headerText="Name" id="c26">
+                        <af:outputText value="#{row.valtName}" id="ot26"/>
+                      </af:column>
+                    </af:table>
+                  </af:panelCollection>
+                  <h:panelGrid columns="2" id="pg5">
+                    <af:commandButton text="Ok" id="cb8" partialSubmit="true"
+                                      action="#{depositsApplicationBacking.actionAcceptValuationTypes}"/>
+                    <af:commandButton text="Cancel" id="cb9"
+                                      partialSubmit="true"/>
+                  </h:panelGrid>
+                </af:panelBox>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="investorPop">
+              <af:dialog id="d3" title="Investor List" type="none"
+                         inlineStyle="width:400.0px;">
+                <af:panelGroupLayout id="pgl2">
+                  <af:panelBox text="PanelBox5" id="pb5" showHeader="never">
+                    <af:panelCollection id="pc2"
+                                        styleClass="AFAuxiliaryStretchWidth">
+                      <af:table value="#{bindings.Investor.collectionModel}"
+                                var="row" rows="#{bindings.Investor.rangeSize}"
+                                emptyText="#{bindings.Investor.viewable ? 'No data to display.' : 'Access Denied.'}"
+                                fetchSize="#{bindings.Investor.rangeSize}"
+                                rowBandingInterval="0"
+                                filterModel="#{bindings.InvestorQuery.queryDescriptor}"
+                                queryListener="#{bindings.InvestorQuery.processQuery}"
+                                filterVisible="true" varStatus="vs"
+                                rowSelection="single" id="t3"
+                                binding="#{depositsApplicationBacking.tblInvestorsPop}">
+                        <af:column filterFeatures="caseInsensitive"
+                                   sortProperty="invId" filterable="true"
+                                   sortable="true" headerText="Investor Id"
+                                   id="c10" rendered="false">
+                          <af:outputText value="#{row.invId}" id="ot8"/>
+                        </af:column>
+                        <af:column filterFeatures="caseInsensitive"
+                                   sortProperty="invName" filterable="true"
+                                   sortable="true" headerText="Investor Name"
+                                   id="c7" width="200">
+                          <af:outputText value="#{row.invName}" id="ot12"/>
+                        </af:column>
+                      </af:table>
+                    </af:panelCollection>
+                    <h:panelGrid columns="2" id="pg29">
+                      <af:commandButton text="Ok" id="btnAcceptInvestor"
+                                        action="#{depositsApplicationBacking.actionAcceptInvestor}"
+                                        partialSubmit="true"/>
+                      <af:commandButton text="Cancel" id="btnCancelSection"/>
+                    </h:panelGrid>
+                  </af:panelBox>
+                </af:panelGroupLayout>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="interestPeriod">
+              <af:dialog id="d18" title="Interest Period" type="none"
+                         inlineStyle="width:250.0px;">
+                <af:panelGroupLayout id="pgl17">
+                  <af:panelBox text="PanelBox20" id="pb23" showHeader="never">
+                    <af:panelCollection id="pc16"
+                                        styleClass="AFAuxiliaryStretchWidth">
+                      <af:table value="#{bindings.Investor1.collectionModel}"
+                                var="row" rows="#{bindings.Investor1.rangeSize}"
+                                emptyText="#{bindings.Investor1.viewable ? 'No data to display.' : 'Access Denied.'}"
+                                fetchSize="#{bindings.Investor1.rangeSize}"
+                                rowBandingInterval="0"
+                                filterModel="#{bindings.Investor1Query.queryDescriptor}"
+                                queryListener="#{bindings.Investor1Query.processQuery}"
+                                filterVisible="true" varStatus="vs"
+                                selectedRowKeys="#{bindings.Investor1.collectionModel.selectedRow}"
+                                selectionListener="#{bindings.Investor1.collectionModel.makeCurrent}"
+                                rowSelection="single" id="t8"
+                                binding="#{depositsApplicationBacking.tblDaysInterest}">
+                        <af:column sortProperty="#{bindings.Investor1.hints.interestDays.name}"
+                                   filterable="true" sortable="true"
+                                   headerText="Year Days" id="c27">
+                          <af:outputText value="#{row.interestDays}" id="ot29"/>
+                        </af:column>
+                        <af:column sortProperty="#{bindings.Investor1.hints.interestDefault.name}"
+                                   filterable="true" sortable="true"
+                                   headerText="Default" id="c28">
+                          <af:outputText value="#{row.interestDefault}"
+                                         id="ot27"/>
+                        </af:column>
+                      </af:table>
+                    </af:panelCollection>
+                    <h:panelGrid columns="2" id="pg24">
+                      <af:commandButton text="Ok" id="cb49"
+                                        action="#{depositsApplicationBacking.actionCaptureInterestDays}"
+                                        partialSubmit="true"/>
+                      <af:commandButton text="Cancel" id="cb51"
+                                        partialSubmit="true"
+                                        action="#{depositsApplicationBacking.closePopUps}"/>
+                    </h:panelGrid>
+                  </af:panelBox>
+                </af:panelGroupLayout>
+              </af:dialog>
+            </af:popup>
+            <af:popup id="bankPop" contentDelivery="lazyUncached">
+              <af:dialog id="d4" title="Bank Account" type="none"
+                         inlineStyle="width:400.0px;">
+                <af:panelGroupLayout id="pgl3">
+                  <af:panelBox text="PanelBox5" id="pb3" showHeader="never">
+                    <af:selectOneRadio label="Source Funds" id="sor1"
+                                       layout="horizontal" value="B"
+                                       autoSubmit="true"
+                                       valueChangeListener="#{depositsApplicationBacking.changeFundsSource}"
+                                       binding="#{depositsApplicationBacking.txtSource}">
+                      <af:selectItem label="Bank" value="B" id="si23"/>
+                      <af:selectItem label="Fund Manager" value="F" id="si22"/>
+                    </af:selectOneRadio>
+                    <af:panelCollection id="pc3">
+                      <f:facet name="menus"/>
+                      <f:facet name="toolbar"/>
+                      <f:facet name="statusbar"/>
+                      <af:table value="#{bindings.BankAccount.collectionModel}"
+                                var="row"
+                                rows="#{bindings.BankAccount.rangeSize}"
+                                emptyText="#{bindings.BankAccount.viewable ? 'No data to display.' : 'Access Denied.'}"
+                                fetchSize="#{bindings.BankAccount.rangeSize}"
+                                rowBandingInterval="0"
+                                filterModel="#{bindings.BankAccountQuery.queryDescriptor}"
+                                queryListener="#{bindings.BankAccountQuery.processQuery}"
+                                filterVisible="false" varStatus="vs"
+                                binding="#{depositsApplicationBacking.tblBnk}"
+                                rowSelection="single" id="t5">
+                        <af:column sortProperty="bctName" filterable="true"
+                                   sortable="true" headerText="Account Name"
+                                   id="c20">
+                          <af:outputText value="#{row.bctName}" id="ot24"/>
+                        </af:column>
+                        <af:column sortProperty="bctNumber" filterable="true"
+                                   sortable="true" headerText="Account Number"
+                                   id="c22">
+                          <af:outputText value="#{row.bctNo}" id="ot14"/>
+                        </af:column>
+                      </af:table>
+                    </af:panelCollection>
+                    <h:panelGrid columns="2" id="pg2">
+                      <af:commandButton text="Ok" id="cb5"
+                                        action="#{depositsApplicationBacking.actionAcceptSourceAccount}"
+                                        partialSubmit="true"/>
+                      <af:commandButton text="Cancel" id="cb6"/>
+                    </h:panelGrid>
+                  </af:panelBox>
+                </af:panelGroupLayout>
+              </af:dialog>
+            </af:popup>
+          </af:group>
+        </f:facet>
+      </af:pageTemplate>
+    </af:document>
+  </f:view>
+</jsp:root>
